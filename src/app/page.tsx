@@ -1,8 +1,60 @@
-import Image from "next/image";
-import QueryParamsDisplay from "@/components/QueryParamsDisplay";
+'use client';
+
 import { Suspense } from 'react';
+import { useState, useEffect } from 'react';
+import Image from "next/image";
+import { useSearchParams } from 'next/navigation';
+import QueryParamsDisplay from "@/components/QueryParamsDisplay";
+import { Xumm } from 'xumm';
 
 export default function Home() {
+  const [bearer, setBearer] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initializeXumm = async () => {
+      try {
+        // URLからxAppTokenを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const xAppToken = urlParams.get('xAppToken');
+
+        if (!xAppToken) {
+          throw new Error("No xAppToken found in URL");
+        }
+
+        // Xumm SDKを初期化
+        const Sdk = new Xumm(process.env.NEXT_PUBLIC_XUMM_API_KEY, xAppToken);
+        
+        // xAppTokenを使用してSDKを設定
+        await Sdk.authorize();
+
+        // ベアラートークンを取得
+        const bearerToken = await Sdk.environment.bearer;
+
+        if (bearerToken) {
+          setBearer(bearerToken);
+          console.log("Bearer token obtained");
+          launchGame(bearerToken);
+        } else {
+          throw new Error("Failed to obtain bearer token");
+        }
+      } catch (error) {
+        console.error('Initialization error:', error);
+        setError(error instanceof Error ? error.message : "An unknown error occurred");
+      }
+    };
+
+    initializeXumm();
+  }, []);
+
+  const launchGame = (account: string) => {
+    // この関数は実際の実装に合わせて調整する必要があります
+    console.log(`Launching game for account: ${account}`);
+    // 例: const token = generateTemporaryToken(account);
+    // const gameUrl = `godot://launch?token=${token}`;
+    // window.location.href = gameUrl;
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -44,6 +96,8 @@ export default function Home() {
       <Suspense fallback={<div>Loading query parameters...</div>}>
         <QueryParamsDisplay />
       </Suspense>
+
+      {bearer}
 
       <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
         <a

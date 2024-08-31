@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 
 export default function QueryParamsDisplay() {
   const searchParams = useSearchParams();
-
   const paramsEntries = Array.from(searchParams.entries());
 
   return (

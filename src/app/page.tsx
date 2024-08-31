@@ -1,4 +1,6 @@
 import Image from "next/image";
+import QueryParamsDisplay from "@/components/QueryParamsDisplay";
+import { Suspense } from 'react';
 
 export default function Home() {
   return (
@@ -38,6 +40,10 @@ export default function Home() {
           priority
         />
       </div>
+
+      <Suspense fallback={<div>Loading query parameters...</div>}>
+        <QueryParamsDisplay />
+      </Suspense>
 
       <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
         <a

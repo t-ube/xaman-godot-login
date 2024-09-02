@@ -23,18 +23,25 @@ export default function Home() {
         }
 
         // Xumm SDKを初期化
-        const Sdk = new Xumm(process.env.NEXT_PUBLIC_XUMM_API_KEY, xAppToken);
+        const xumm = new Xumm(process.env.NEXT_PUBLIC_XUMM_API_KEY, xAppToken);
         
         // xAppTokenを使用してSDKを設定
-        await Sdk.authorize();
+        await xumm.authorize();
 
         // ベアラートークンを取得
-        const bearerToken = await Sdk.environment.bearer;
+        const bearerToken = await xumm.environment.bearer;
 
         if (bearerToken) {
           setBearer(bearerToken);
           console.log("Bearer token obtained");
           launchGame(bearerToken);
+          xumm.payload?.create({
+            TransactionType: 'Payment',
+            Destination: 'rPJuukGFu7Awm2c2fBY8jcAndfEZQngbpD',
+            Amount: String(1)
+          }).then((payload:any) => {
+            xumm.xapp?.openSignRequest(payload)
+          })
         } else {
           throw new Error("Failed to obtain bearer token");
         }
@@ -53,6 +60,7 @@ export default function Home() {
     // 例: const token = generateTemporaryToken(account);
     // const gameUrl = `godot://launch?token=${token}`;
     // window.location.href = gameUrl;
+    
   };
 
   return (

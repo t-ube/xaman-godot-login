@@ -55,6 +55,15 @@ const GodotWebView: React.FC = () => {
     window.addEventListener('orientationchange', handleOrientation);
     handleOrientation(); // 初期方向を設定
 
+    /*
+    const handleResize = () => {
+      setWindowSize({ width: `${window.innerWidth}px`, height: `${window.innerHeight}px` });
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // 初期サイズを設定
+    */
+   
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'FROM_GODOT') {
         console.log('Received message from Godot:', event.data.message);
@@ -81,7 +90,12 @@ const GodotWebView: React.FC = () => {
       window.removeEventListener('orientationchange', handleOrientation);
       window.removeEventListener('message', handleMessage);
     };
-   
+    /*
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('message', handleMessage);
+    };
+    */
   }, [xumm,bearer]);
 
   const sendMessageToGodot = (message: string) => {

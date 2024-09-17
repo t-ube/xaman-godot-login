@@ -1,5 +1,5 @@
-// page.tsx
 'use client';
+
 
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './GodotWebView.module.css';
@@ -41,19 +41,12 @@ const GodotWebView: React.FC = () => {
       }
     };
 
-    const handleOrientation = () => {
-      const container = document.getElementById('game-container');
-      if (container) {
-        if (window.orientation === 0 || window.orientation === 180) {
-          container.classList.add(styles.portrait);
-        } else {
-          container.classList.remove(styles.portrait);
-        }
-      }
+    const handleResize = () => {
+      setWindowSize({ width: `${window.innerWidth}px`, height: `${window.innerHeight}px` });
     };
 
-    window.addEventListener('orientationchange', handleOrientation);
-    handleOrientation(); // 初期方向を設定
+    window.addEventListener('resize', handleResize);
+    handleResize(); // 初期サイズを設定
 
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'FROM_GODOT') {
@@ -78,10 +71,9 @@ const GodotWebView: React.FC = () => {
     initializeXumm();
 
     return () => {
-      window.removeEventListener('orientationchange', handleOrientation);
+      window.removeEventListener('resize', handleResize);
       window.removeEventListener('message', handleMessage);
     };
-   
   }, [xumm,bearer]);
 
   const sendMessageToGodot = (message: string) => {
@@ -91,7 +83,7 @@ const GodotWebView: React.FC = () => {
   };
 
   return (
-    <div id="game-container" className={styles.fullscreen}>
+    <div className={styles.fullscreen} style={windowSize}>
       <iframe
         ref={webviewRef}
         src="https://xaman-godot.pages.dev"
